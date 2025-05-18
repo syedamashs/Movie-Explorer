@@ -4,6 +4,7 @@ import MovieCard from './components/MovieCard';
 function App() {
   const [query, setQuery] = useState('');
   const [movies, setMovies] = useState([]);
+  const [selectedMovie, setSelectedMovie] = useState(null); // modal state
 
   const handleSearch = async () => {
     if (query.trim() === '') return;
@@ -15,8 +16,6 @@ function App() {
       const res = await fetch(url);
       const data = await res.json();
 
-      console.log('API Result:', data);
-
       if (data.Search) {
         setMovies(data.Search);
       } else {
@@ -27,61 +26,102 @@ function App() {
     }
   };
 
+  const handleCardClick = async (movie) => {
+    const apiKey = '7db3fc35';
+    const url = `https://www.omdbapi.com/?apikey=${apiKey}&i=${movie.imdbID}&plot=full`;
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      setSelectedMovie(data);
+    } catch (error) {
+      console.error('Modal fetch error:', error);
+    }
+  };
+
   return (
     <div className="container mt-4 justify-content-center">
       <div className="d-flex flex-column align-items-center mt-5 mb-4">
-          <h1 className='text-center mb-4'>🎬 Movie Explorer</h1>
-      <form
+        <h1 className='text-center mb-4'>🎬 Movie Explorer</h1>
+        <form
           className="input-group"
           style={{ maxWidth: '500px', width: '100%' }}
           onSubmit={(e) => {
-               e.preventDefault(); 
-               handleSearch();
-        }}>
-
-  <input
-    type="text"
-    className="form-control me-2"
-    value={query}
-    placeholder="Search for Movies..."
-    onChange={(e) => setQuery(e.target.value)}
-  />
-
-  <button className="btn btn-primary me-2" type="submit">
-    Search
-  </button>
-
-  <button
-    className="btn btn-secondary"
-    type="button"
-    onClick={() => {
-      setQuery('');
-      setMovies([]);
-    }}
-  >
-    Clear
-  </button>
-</form>
-
+            e.preventDefault();
+            handleSearch();
+          }}
+        >
+          <input
+            type="text"
+            className="form-control me-2"
+            value={query}
+            placeholder="Search for Movies..."
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <button className="btn btn-primary me-2" type="submit">
+            Search
+          </button>
+          <button
+            className="btn btn-secondary"
+            type="button"
+            onClick={() => {
+              setQuery('');
+              setMovies([]);
+            }}
+          >
+            Clear
+          </button>
+        </form>
       </div>
 
       <div className={`row ${movies.length <= 3 ? 'justify-content-center' : ''}`}>
         {movies.length > 0 ? (
           movies.map((movie) => (
-            <div className="col-md-3 mb-1 d-flex justify-content-center">
+            <div key={movie.imdbID} className="col-md-3 mb-3 d-flex justify-content-center">
               <MovieCard
                 title={movie.Title}
                 year={movie.Year}
                 poster={movie.Poster}
-                desc={movie.Plot}
-                imdbRating={movie.imdbRating}
+                onClick={() => handleCardClick(movie)}
               />
-              </div>
+            </div>
           ))
         ) : (
           <p className="text-center">No movies found.</p>
         )}
       </div>
+
+      {selectedMovie && (
+  <div
+    className="modal fade show d-block"
+    tabIndex="-1"
+    style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.6)' }}
+    onClick={() => setSelectedMovie(null)}
+  >
+    <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title">{selectedMovie.Title}</h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setSelectedMovie(null)}
+          ></button>
+        </div>
+        <div className="modal-body">
+          <img
+            src={selectedMovie.Poster !== 'N/A' ? selectedMovie.Poster : 'https://via.placeholder.com/300x400'}
+            alt={selectedMovie.Title}
+            className="img-fluid mb-3"
+          />
+          <p><strong>Year:</strong> {selectedMovie.Year}</p>
+          <p><strong>IMDB Rating:</strong> {selectedMovie.imdbRating || 'N/A'}</p>
+          <p>{selectedMovie.Plot || 'No description available.'}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

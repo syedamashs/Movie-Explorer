@@ -1,9 +1,7 @@
-function MovieCard({ title, year, poster, desc, imdbRating }) {
+// No modal logic here anymore!
+function MovieCard({ title, year, poster, onClick }) {
   return (
-  <div className="flip-card h-80">
-  <div className="flip-card-inner">
-
-    <div className="flip-card-front card h-100">
+    <div className="card h-80" style={{ cursor: 'pointer' }} onClick={onClick}>
       <img
         src={poster !== 'N/A' ? poster : 'https://via.placeholder.com/300x400'}
         className="card-img-top"
@@ -14,15 +12,6 @@ function MovieCard({ title, year, poster, desc, imdbRating }) {
         <p className="card-text">Year: {year}</p>
       </div>
     </div>
-
-    <div className="flip-card-back card h-100 bg-dark text-white p-3">
-      <h5>{title}</h5>
-      <p><strong>IMDB:</strong>{imdbRating}</p>
-      <p>{desc}</p>
-    </div>
-
-</div>
-</div>
   );
 }
 
