@@ -8,7 +8,7 @@ function App() {
   const handleSearch = async () => {
     if (query.trim() === '') return;
 
-    const apiKey = '7db3fc35'; // ✅
+    const apiKey = '7db3fc35';
     const url = `https://www.omdbapi.com/?apikey=${apiKey}&s=${query}`;
 
     try {
@@ -68,13 +68,15 @@ function App() {
       <div className={`row ${movies.length <= 3 ? 'justify-content-center' : ''}`}>
         {movies.length > 0 ? (
           movies.map((movie) => (
-            <div className="col-md-3 mb-4 d-flex justify-content-center">
+            <div className="col-md-3 mb-1 d-flex justify-content-center">
               <MovieCard
                 title={movie.Title}
                 year={movie.Year}
                 poster={movie.Poster}
+                desc={movie.Plot}
+                imdbRating={movie.imdbRating}
               />
-            </div>
+              </div>
           ))
         ) : (
           <p className="text-center">No movies found.</p>
