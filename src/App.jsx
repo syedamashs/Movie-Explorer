@@ -100,15 +100,15 @@ function App() {
   >
     <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
       <div className="modal-content">
-        <div className="modal-header">
-          <h5 className="modal-title">{selectedMovie.Title}</h5>
+        <div className="modal-header justify-content-center position-relative">
+          <h5 className="modal-title text-center w-100">{selectedMovie.Title}</h5>
           <button
             type="button"
             className="btn-close"
             onClick={() => setSelectedMovie(null)}
           ></button>
         </div>
-        <div className="modal-body align-items-center justify-content-center">
+        <div className="modal-body align-items-center justify-content-center text-center d-flex flex-column p-4">
           <img
             src={selectedMovie.Poster !== 'N/A' ? selectedMovie.Poster : 'https://via.placeholder.com/300x400'}
             alt={selectedMovie.Title}
@@ -116,6 +116,8 @@ function App() {
           />
           <p><strong>Year:</strong> {selectedMovie.Year}</p>
           <p><strong>IMDB Rating:</strong> {selectedMovie.imdbRating || 'N/A'}</p>
+          <p><strong>Actors:</strong> {selectedMovie.Actors || 'N/A'}</p>
+          <p><strong>Director:</strong> {selectedMovie.Director || 'N/A'}</p>
           <p>{selectedMovie.Plot || 'No description available.'}</p>
         </div>
       </div>
