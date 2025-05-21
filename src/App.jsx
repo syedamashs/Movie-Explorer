@@ -108,7 +108,7 @@ function App() {
             onClick={() => setSelectedMovie(null)}
           ></button>
         </div>
-        <div className="modal-body">
+        <div className="modal-body align-items-center justify-content-center">
           <img
             src={selectedMovie.Poster !== 'N/A' ? selectedMovie.Poster : 'https://via.placeholder.com/300x400'}
             alt={selectedMovie.Title}
