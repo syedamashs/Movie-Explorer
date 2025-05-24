@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import MovieCard from './components/MovieCard';
+import './index.css';
 
 function App() {
   const [query, setQuery] = useState('');
   const [movies, setMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null); // modal state
+  const [searched , setSearched] = useState(false);
 
   const handleSearch = async () => {
     if (query.trim() === '') return;
@@ -16,6 +18,7 @@ function App() {
       const res = await fetch(url);
       const data = await res.json();
 
+      setSearched(true);
       if (data.Search) {
         setMovies(data.Search);
       } else {
@@ -40,9 +43,14 @@ function App() {
   };
 
   return (
-    <div className="container mt-4 justify-content-center">
-      <div className="d-flex flex-column align-items-center mt-5 mb-4">
-        <h1 className='text-center mb-4'>🎬 Movie Explorer</h1>
+    <div className="container mt-5 justify-content-center d-flex flex-column "
+    style={{ minHeight: '80vh' }}
+    >
+      <div className="d-flex flex-column align-items-center mb-5">
+        <div className="typewriter">
+            <h1 className='mb-5 text-center'>🎬 Movie Explorer</h1>
+        </div>
+
         <form
           className="input-group"
           style={{ maxWidth: '500px', width: '100%' }}
@@ -67,6 +75,7 @@ function App() {
             onClick={() => {
               setQuery('');
               setMovies([]);
+              setSearched(false);
             }}
           >
             Clear
@@ -86,8 +95,11 @@ function App() {
               />
             </div>
           ))
-        ) : (
-          <p className="text-center">No movies found.</p>
+        ) : searched ? (
+          <p className='text-center'>No Movies Found!</p>
+        ) : 
+        (
+          <p className="text-center">🎥 Explore the Movies</p>
         )}
       </div>
 
