@@ -20,7 +20,7 @@
 
 - **React** – Frontend JavaScript library
 - **Bootstrap 5** – Responsive, styled components
-- **OMDb API** – For movie data (https://www.omdbapi.com/)
+- **OMDb API** – For movie data [The Open Movie Database](https://www.omdbapi.com/)
 - **Custom CSS** – For typewriter and scroll animations
 
 ---
@@ -41,3 +41,31 @@ Movie-Explorer/
 ├── package.json
 └── README.md
 ```
+
+---
+
+## 🔧 Setup Instructions
+
+### 1. Clone the repository
+Open your terminal and run the following command to clone the repository to your local machine:
+```bash
+git clone https://github.com/syedamashs/Movie-Explorer.git
+cd Movie-Explorer
+```
+### 2. Install Dependencies
+This command will install the dependencies required for the project to run.
+```bash
+npm install
+```
+### 3. Set Your Access Token
+Sign up at [The Open Movie Database](https://www.omdbapi.com/) to get your API key.
+Replace the YOUR_API_KEY placeholder in the App.js file with your actual API key.
+```js
+const apiKey = 'YOUR_API_KEY'; // Replace with your OMDb API key
+```
+
+### 4. Start the development server
+```bash
+npm start
+```
+The app will run on http://localhost:3000.
