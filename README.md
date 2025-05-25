@@ -27,3 +27,15 @@
 
 ## 📂 Project Structure
 
+Movie-Explorer/
+├── public/
+│ ├── index.html
+│ └── ...
+├── src/
+│ ├── components/
+│ │ └── MovieCard.js
+│ ├── App.js
+│ ├── index.js
+│ └── index.css
+├── package.json
+└── README.md
