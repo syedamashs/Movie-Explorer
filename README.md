@@ -27,6 +27,7 @@
 
 ## 📂 Project Structure
 
+```
 Movie-Explorer/
 ├── public/
 │ ├── index.html
@@ -39,3 +40,4 @@ Movie-Explorer/
 │ └── index.css
 ├── package.json
 └── README.md
+```
