@@ -70,5 +70,8 @@ npm start
 ```
 The app will run on http://localhost:3000.
 
-## 💖 Credits
-Made with ❤️ by [**SyedAmash**](https://github.com/syedamashs)
+---
+
+<h2>💖 Credits</h2>
+<p>Made with ❤️ by <a href="https://github.com/syedamashs" target="_blank"><strong>SyedAmash</strong></a></p>
+
