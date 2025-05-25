@@ -72,6 +72,6 @@ The app will run on http://localhost:3000.
 
 ---
 
-# 💖 Credits
+### 💖 Credits
 Made with ❤️ by [**SyedAmash**]("https://github.com/syedamashs")
 
