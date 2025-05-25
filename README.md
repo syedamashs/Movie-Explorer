@@ -1,12 +1,29 @@
-# React + Vite
+# 🎬 Movie Explorer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Movie Explorer** is a sleek, React-based web application that allows users to search for movies and explore detailed information fetched from the **OMDb API**. Whether you're looking for a classic or the latest blockbuster, Movie Explorer makes it fast and fun!
 
-Currently, two official plugins are available:
+![Movie Explorer Preview](link-to-screenshot-image)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🚀 Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- 🔍 Search for movies by title.
+- 📄 View detailed info: plot, poster, rating, actors, director, and more.
+- 🎬 Modal popup with full movie info on click.
+- 💡 Responsive design with a modern UI using **Bootstrap**.
+- ⚡ Typewriter animation, scroll effects, and clear feedback for empty search or no results.
+
+---
+
+## 🛠 Tech Stack
+
+- **React** – Frontend JavaScript library
+- **Bootstrap 5** – Responsive, styled components
+- **OMDb API** – For movie data (https://www.omdbapi.com/)
+- **Custom CSS** – For typewriter and scroll animations
+
+---
+
+## 📂 Project Structure
+
