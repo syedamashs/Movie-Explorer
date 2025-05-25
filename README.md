@@ -69,3 +69,6 @@ const apiKey = 'YOUR_API_KEY'; // Replace with your OMDb API key
 npm start
 ```
 The app will run on http://localhost:3000.
+
+## 💖 Credits
+Made with ❤️ by [**SyedAmash**](https://github.com/syedamashs)
