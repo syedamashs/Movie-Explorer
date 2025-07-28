@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
+import HomePage from './components/HomePage';
 import Home from './components/Home';
 import Collections from './components/Collections';
 import './index.css';
@@ -41,6 +42,10 @@ function App() {
         <Routes>
           <Route 
             path="/" 
+            element={<HomePage />} 
+          />
+          <Route 
+            path="/search" 
             element={
               <Home 
                 collections={collections}
