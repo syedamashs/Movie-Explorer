@@ -11,7 +11,7 @@ function App() {
   const handleSearch = async () => {
     if (query.trim() === '') return;
 
-    const apiKey = 'Your API KEY of OMDB-API';
+    const apiKey = '7db3fc35';
     const url = `https://www.omdbapi.com/?apikey=${apiKey}&s=${query}`;
 
     try {
