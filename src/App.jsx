@@ -9,7 +9,7 @@ import './index.css';
 
 // API URL - will be different for production
 const API_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://your-backend-url.onrender.com' 
+  ? 'https://movie-explorer-backend-5aq3.onrender.com' 
   : 'http://localhost:5000';
 
 function App() {
