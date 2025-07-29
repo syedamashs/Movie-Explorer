@@ -1,0 +1,195 @@
+.homepage {
+  min-height: 100vh;
+}
+
+.hero-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 100px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="rgba(255,255,255,0.1)"><polygon points="0,100 1000,0 1000,100"/></svg>');
+  background-size: cover;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-subtitle {
+  font-size: 1.5rem;
+  margin-bottom: 3rem;
+  opacity: 0.9;
+}
+
+.hero-stats {
+  margin-top: 3rem;
+}
+
+.stat-item h3 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #ffd700;
+}
+
+.stat-item p {
+  font-size: 1.1rem;
+  opacity: 0.8;
+}
+
+.features-section {
+  padding: 80px 0;
+  background: #f8f9fa;
+}
+
+.feature-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  text-align: center;
+  height: 100%;
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+}
+
+.feature-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  color: white;
+  font-size: 2rem;
+}
+
+.feature-card h4 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.feature-card p {
+  color: #666;
+  line-height: 1.6;
+}
+
+.how-it-works-section {
+  padding: 80px 0;
+  background: white;
+}
+
+.section-title {
+  color: #333;
+  font-weight: 700;
+  margin-bottom: 3rem;
+}
+
+.step-card {
+  padding: 2rem 1rem;
+}
+
+.step-number {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 auto 1rem;
+}
+
+.step-card h5 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.step-card p {
+  color: #666;
+}
+
+.developer-section {
+  padding: 80px 0;
+  background: #343a40;
+  color: white;
+}
+
+.developer-card {
+  background: rgba(255,255,255,0.1);
+  padding: 2rem;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.developer-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.developer-avatar {
+  font-size: 4rem;
+  margin-right: 1.5rem;
+  color: #ffd700;
+}
+
+.developer-info h4 {
+  margin-bottom: 0.5rem;
+  color: #ffd700;
+}
+
+.developer-title {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  opacity: 0.8;
+}
+
+.developer-bio {
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.developer-links {
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.2rem;
+  }
+  
+  .developer-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .developer-avatar {
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+} 
