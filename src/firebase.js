@@ -4,12 +4,7 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyB263nOROY5R1f91_fFDbdFs4HQva2uDUc",
-    authDomain: "movie-explorer-ba175.firebaseapp.com",
-    projectId: "movie-explorer-ba175",
-    storageBucket: "movie-explorer-ba175.firebasestorage.app",
-    messagingSenderId: "340201428202",
-    appId: "1:340201428202:web:4266f2d310a4ddc1ed7393"
+    Config from firebase
   };
 
 const app = initializeApp(firebaseConfig);
