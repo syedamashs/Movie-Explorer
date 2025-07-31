@@ -18,9 +18,9 @@ function UserProfile({ user, onLogout }) {
     <div className="user-profile">
       <button className="profile-btn" onClick={toggleDropdown}>
         <div className="profile-avatar">
-          {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
+          {user?.displayName ? user.displayName.charAt(0).toUpperCase() : 'U'}
         </div>
-        <span className="profile-name">{user.username}</span>
+        <span className="profile-name">{user?.displayName || 'User'}</span>
         <span className="dropdown-arrow">▼</span>
       </button>
 
@@ -28,11 +28,11 @@ function UserProfile({ user, onLogout }) {
         <div className="profile-dropdown">
           <div className="dropdown-header">
             <div className="dropdown-avatar">
-              {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
+              {user?.displayName ? user.displayName.charAt(0).toUpperCase() : 'U'}
             </div>
             <div className="dropdown-user-info">
-              <div className="dropdown-username">{user.username}</div>
-              <div className="dropdown-email">{user.email}</div>
+              <div className="dropdown-username">{user?.displayName || 'User'}</div>
+              <div className="dropdown-email">{user?.email || 'No email'}</div>
             </div>
           </div>
           
@@ -51,7 +51,7 @@ function UserProfile({ user, onLogout }) {
             className="dropdown-item"
             onClick={() => setIsDropdownOpen(false)}
           >
-            📚 My Collections
+            📚 Collections
           </Link>
           
           <div className="dropdown-divider"></div>

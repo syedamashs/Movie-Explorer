@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import AuthModal from './AuthModal';
 import UserProfile from './UserProfile';
 import './Navigation.css';
 
-function Navigation({ collectionsCount, user, onLogin, onRegister, onLogout }) {
+function Navigation({ collectionsCount, user, onLogin, onLogout }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -16,12 +14,9 @@ function Navigation({ collectionsCount, user, onLogin, onRegister, onLogout }) {
     setIsSidebarOpen(false);
   };
 
-  const handleAuthSuccess = (data) => {
-    if (data.token) {
-      onLogin(data);
-    } else {
-      onRegister(data);
-    }
+  const handleGoogleSignIn = () => {
+    // This will be handled by your AuthContext
+    onLogin();
   };
 
   return (
@@ -50,9 +45,9 @@ function Navigation({ collectionsCount, user, onLogin, onRegister, onLogout }) {
             ) : (
               <button 
                 className="btn btn-outline-light btn-sm"
-                onClick={() => setIsAuthModalOpen(true)}
+                onClick={handleGoogleSignIn}
               >
-                🔐 Login / Signup
+                🔐 Google Sign In
               </button>
             )}
           </div>
@@ -101,25 +96,17 @@ function Navigation({ collectionsCount, user, onLogin, onRegister, onLogout }) {
                 <button 
                   className="sidebar-link auth-sidebar-btn"
                   onClick={() => {
-                    setIsAuthModalOpen(true);
+                    handleGoogleSignIn();
                     closeSidebar();
                   }}
                 >
-                  🔐 Login / Signup
+                  🔐 Google Sign In
                 </button>
               </li>
             )}
           </ul>
         </div>
       </div>
-
-      {/* Auth Modal */}
-      <AuthModal 
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        onLogin={handleAuthSuccess}
-        onRegister={handleAuthSuccess}
-      />
     </>
   );
 }
