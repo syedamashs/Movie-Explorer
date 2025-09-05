@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import MovieCard from './components/MovieCard';
+import Toggle from "./components/Toggle";
 import './index.css';
 
 function App() {
@@ -43,9 +44,11 @@ function App() {
   };
 
   return (
+    
     <div className="container mt-5 justify-content-center d-flex flex-column "
     style={{ minHeight: '80vh' }}
     >
+      <div><Toggle/></div>
       <div className="d-flex flex-column align-items-center mb-5">
         <div className="typewriter">
             <h1 className='mb-5 text-center'>🎬 Movie Explorer</h1>
