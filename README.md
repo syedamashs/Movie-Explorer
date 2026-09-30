@@ -6,72 +6,36 @@
 
 ---
 
-## 🚀 Features
+## 🚀 Features & Enhancements
 
-- 🔍 Search for movies by title.
-- 📄 View detailed info: plot, poster, rating, actors, director, and more.
-- 🎬 Modal popup with full movie info on click.
-- 💡 Responsive design with a modern UI using **Bootstrap**.
-- ⚡ Typewriter animation, scroll effects, and clear feedback for empty search or no results.
+### 🎯 1. Personalization & User Cinema Lounge
+- **🔖 Custom Watchlist**: Save movies you plan to watch; persistent across browser sessions using `localStorage`.
+- **❤️ Favorites Collection**: Keep track of your all-time favorite titles with 1-click toggling.
+- **✅ Watched Tracker**: Mark movies as watched with visual status indicators.
+- **⭐ Personal Ratings & Mini-Reviews**: Give films 1–5 stars and write personal notes/reviews stored in your private library.
+- **📊 Cinema Taste Profile & Analytics**: View your top watched genres, average rating given, and total library statistics.
+- **📦 Backup & Restore**: Export your entire watchlist, favorites, and ratings as JSON or import previous backups.
 
----
+### 🍿 2. Engaging Exploration & Discovery
+- **🎬 Spotlight Hero Banner**: Featured premiere banner with trailer launcher, metadata badges, and synopsis.
+- **🔥 Curated Category Carousels**:
+  - Trending & Blockbusters
+  - All-Time IMDb Masterpieces
+  - Mind-Bending Sci-Fi
+  - Binge-Worthy TV Series
+- **⚡ Live Debounced Autocomplete**: Instant search suggestions dropdown while typing.
+- **🎛️ Advanced Filtering & Sorting**: Filter by Type (Movies, TV Series, Episodes), Release Year, and sort by Newest, Oldest, or Title.
+- **📄 Multi-Page Pagination**: Browse through complete result sets with "Load More" pagination.
+- **🕒 Search History**: Recent search query chips with 1-click re-search.
 
-## 🛠 Tech Stack
+### 🎥 3. Rich Media & Interactive Details
+- **▶️ Embedded YouTube Trailers**: Watch official trailers directly within the movie details modal.
+- **🔍 Clickable Cast & Directors**: Click on any actor or director in the modal to immediately discover their filmography.
+- **🌐 External Cinema Hub Links**: Quick links to IMDb, Rotten Tomatoes, and streaming search on JustWatch.
+- **📋 Share Movie**: Copy shareable links and stats directly to your clipboard.
 
-- **React** – Frontend JavaScript library
-- **Bootstrap 5** – Responsive, styled components
-- **OMDb API** – For movie data [The Open Movie Database](https://www.omdbapi.com/)
-- **Custom CSS** – For typewriter and scroll animations
-
----
-
-## 📂 Project Structure
-
-```
-Movie-Explorer/
-├── public/
-│ ├── index.html
-│ └── ...
-├── src/
-│ ├── components/
-│ │ └── MovieCard.js
-│ ├── App.js
-│ ├── index.js
-│ └── index.css
-├── package.json
-└── README.md
-```
-
----
-
-## 🔧 Setup Instructions
-
-### 1. Clone the repository
-Open your terminal and run the following command to clone the repository to your local machine:
-```bash
-git clone https://github.com/syedamashs/Movie-Explorer.git
-cd Movie-Explorer
-```
-### 2. Install Dependencies
-This command will install the dependencies required for the project to run.
-```bash
-npm install
-```
-### 3. Set Your Access Token
-Sign up at [The Open Movie Database](https://www.omdbapi.com/) to get your API key.
-Replace the YOUR_API_KEY placeholder in the App.js file with your actual API key.
-```js
-const apiKey = 'YOUR_API_KEY'; // Replace with your OMDb API key
-```
-
-### 4. Start the development server
-```bash
-npm start
-```
-The app will run on http://localhost:3000.
-
----
-
-### 💖 Credits
-Made with ❤️ by [**SyedAmash**](https://github.com/syedamashs).
+### ✨ 4. Aesthetic & Design System
+- **Cinematic Dark & Light Modes**: Glassmorphic cards, glowing accents, and ambient contrast.
+- **Skeleton Shimmer Loaders**: Smooth loading states for zero layout shift.
+- **Toast Notifications**: Floating feedback for actions (Watchlist additions, clipboard copying, rating saves).
 
