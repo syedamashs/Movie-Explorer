@@ -189,7 +189,7 @@ export default function UserLibrary({ onSelectMovie, onExploreMovies }) {
       ) : (
         <div className="row g-4">
           {currentList.map((movie) => (
-            <div key={movie.imdbID} className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+            <div key={movie.id || movie.imdbID} className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
               <MovieCard movie={movie} onClick={() => onSelectMovie(movie)} />
             </div>
           ))}

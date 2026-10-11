@@ -23,7 +23,7 @@ export default function TasteProfile({ onSelectMovie, onExploreMovies }) {
   // Combine saved movies to compute taste insights
   const allSaved = [...watchlist, ...favorites, ...watched];
   const uniqueMoviesMap = new Map();
-  allSaved.forEach((m) => uniqueMoviesMap.set(m.imdbID, m));
+  allSaved.forEach((m) => uniqueMoviesMap.set(m.id || m.imdbID, m));
   const uniqueSaved = Array.from(uniqueMoviesMap.values());
 
   // Calculate genre frequency
@@ -140,7 +140,7 @@ export default function TasteProfile({ onSelectMovie, onExploreMovies }) {
           </div>
           <div className="row g-3">
             {recentlyViewed.slice(0, 4).map((movie) => (
-              <div key={movie.imdbID} className="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+              <div key={movie.id || movie.imdbID} className="col-xl-3 col-lg-3 col-md-6 col-sm-6">
                 <MovieCard movie={movie} onClick={() => onSelectMovie(movie)} />
               </div>
             ))}

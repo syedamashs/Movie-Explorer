@@ -290,6 +290,128 @@ h1, h2, h3, h4, h5, h6, .brand-font {
   }
 }
 
+/* Hero Carousel Animations & Controls */
+.hero-content-wrapper {
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.hero-content-fading {
+  opacity: 0.15;
+  transform: translateY(6px);
+}
+
+.hero-nav-arrow {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.hero-nav-arrow:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.12);
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.5);
+}
+
+.hero-indicator-pill {
+  height: 5px;
+  width: 20px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.35s ease;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  padding: 0;
+}
+
+.hero-indicator-pill:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.hero-indicator-pill.active {
+  width: 48px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.hero-progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #ef4444);
+  border-radius: 9999px;
+  animation: heroProgress 5s linear forwards;
+}
+
+@keyframes heroProgress {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+/* Movie Carousel Middle Left & Right Navigation Arrows */
+.carousel-track-wrapper {
+  position: relative;
+}
+
+.carousel-nav-arrow {
+  position: absolute;
+  top: 45%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+}
+
+.carousel-nav-arrow:hover {
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: #ffffff;
+  transform: translateY(-50%) scale(1.18);
+  box-shadow: 0 6px 22px rgba(245, 158, 11, 0.5);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.carousel-nav-arrow.left {
+  left: -14px;
+}
+
+.carousel-nav-arrow.right {
+  right: -14px;
+}
+
+@media (max-width: 768px) {
+  .carousel-nav-arrow.left {
+    left: 4px;
+  }
+  .carousel-nav-arrow.right {
+    right: 4px;
+  }
+}
+
 /* Nav Pills */
 .nav-custom-pill {
   padding: 8px 16px;
@@ -422,6 +544,58 @@ h1, h2, h3, h4, h5, h6, .brand-font {
 @keyframes modalScale {
   from { transform: scale(0.93); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+/* Modal Poster & Backdrop Alignment */
+.modal-backdrop-hero {
+  position: relative;
+  height: 260px;
+  background-size: cover;
+  background-position: center 25%;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .modal-backdrop-hero {
+    height: 180px;
+  }
+}
+
+.modal-poster-wrapper {
+  margin-top: -85px;
+  position: relative;
+  z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .modal-poster-wrapper {
+    margin-top: -30px;
+    max-width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.modal-glass-btn {
+  background: rgba(9, 11, 16, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.modal-glass-btn:hover {
+  background: rgba(239, 68, 68, 0.85);
+  border-color: rgba(239, 68, 68, 1);
+  color: #ffffff;
+  transform: scale(1.08);
 }
 
 /* Toast Notification */

@@ -12,7 +12,7 @@ import {
 } from 'react-icons/fa';
 import { useTheme } from '../context/ThemeContext';
 import { usePersonalization } from '../context/PersonalizationContext';
-import { searchMovies } from '../services/omdbApi';
+import { searchMovies, LANGUAGES } from '../services/tmdbApi';
 
 export default function Navbar({
   activeView,
@@ -21,6 +21,8 @@ export default function Navbar({
   setSearchQuery,
   onPerformSearch,
   onSelectMovie,
+  selectedLanguage,
+  setSelectedLanguage,
 }) {
   const { isDark, toggleTheme } = useTheme();
   const { watchlist, favorites, addSearchHistory } = usePersonalization();
@@ -162,7 +164,7 @@ export default function Navbar({
               </div>
               {autocompleteResults.map((item) => (
                 <div
-                  key={item.imdbID}
+                  key={item.id || item.imdbID}
                   className="search-dropdown-item"
                   onClick={() => handleSelectAutocomplete(item)}
                 >
@@ -228,6 +230,21 @@ export default function Navbar({
           >
             <FaChartPie /> <span className="d-none d-md-inline">Taste & Stats</span>
           </button>
+
+          {/* Language Selector Dropdown */}
+          <select
+            className="form-select form-select-sm rounded-pill bg-transparent border-secondary text-body fw-bold d-none d-sm-block ms-1"
+            value={selectedLanguage || 'ta'}
+            onChange={(e) => setSelectedLanguage && setSelectedLanguage(e.target.value)}
+            style={{ width: 'auto', cursor: 'pointer', fontSize: '0.82rem' }}
+            title="Select Cinema Language"
+          >
+            {LANGUAGES.map((lang) => (
+              <option key={lang.code} value={lang.code} className="text-dark">
+                {lang.emoji} {lang.name}
+              </option>
+            ))}
+          </select>
 
           {/* Theme Toggle Button */}
           <button

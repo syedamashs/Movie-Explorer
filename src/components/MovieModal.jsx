@@ -10,13 +10,24 @@ import {
   FaPlay,
   FaShareAlt,
   FaExternalLinkAlt,
-  FaAward,
   FaCalendarAlt,
   FaClock,
+  FaDollarSign,
+  FaTv,
+  FaFilm,
+  FaUsers,
+  FaThList,
 } from 'react-icons/fa';
 import { usePersonalization } from '../context/PersonalizationContext';
+import { getProfileUrl, getPosterUrl, formatCurrency } from '../services/tmdbApi';
 
-export default function MovieModal({ movie, onClose, onSearchPerson, initialShowTrailer = false }) {
+export default function MovieModal({
+  movie,
+  onClose,
+  onSearchPerson,
+  onSelectMovie,
+  initialShowTrailer = false,
+}) {
   const {
     isFavorite,
     isWatchlist,
@@ -31,19 +42,22 @@ export default function MovieModal({ movie, onClose, onSearchPerson, initialShow
   } = usePersonalization();
 
   const [showTrailer, setShowTrailer] = useState(initialShowTrailer);
+  const [selectedVideoKey, setSelectedVideoKey] = useState(null);
   const [hoverStar, setHoverStar] = useState(0);
 
-  const userRatingData = movie ? getMovieRating(movie.imdbID) : null;
+  const movieId = movie ? (movie.imdbID || movie.id) : null;
+  const userRatingData = movieId ? getMovieRating(movieId) : null;
   const [ratingVal, setRatingVal] = useState(userRatingData ? userRatingData.rating : 0);
   const [reviewVal, setReviewVal] = useState(userRatingData ? userRatingData.review : '');
 
   useEffect(() => {
     if (movie) {
       addRecentlyViewed(movie);
-      const existing = getMovieRating(movie.imdbID);
+      const existing = getMovieRating(movieId);
       setRatingVal(existing ? existing.rating : 0);
       setReviewVal(existing ? existing.review : '');
       setShowTrailer(initialShowTrailer);
+      setSelectedVideoKey(movie.trailerKey || (movie.videos?.[0]?.key || null));
     }
   }, [movie, initialShowTrailer]);
 
@@ -58,14 +72,12 @@ export default function MovieModal({ movie, onClose, onSearchPerson, initialShow
 
   if (!movie) return null;
 
-  const inFav = isFavorite(movie.imdbID);
-  const inWatch = isWatchlist(movie.imdbID);
-  const inSeen = isWatched(movie.imdbID);
+  const inFav = isFavorite(movieId);
+  const inWatch = isWatchlist(movieId);
+  const inSeen = isWatched(movieId);
 
-  const fallbackPoster =
-    'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22300%22%20height%3D%22450%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20300%20450%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_1%20text%20%7B%20fill%3A%23888%3Bfont-weight%3Abold%3Bfont-family%3Asans-serif%3Bfont-size%3A20pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_1%22%3E%3Crect%20width%3D%22300%22%20height%3D%22450%22%20fill%3D%22%23181e29%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2285%22%20y%3D%22230%22%3ENo%20Poster%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E';
-
-  const posterSrc = movie.Poster && movie.Poster !== 'N/A' ? movie.Poster : fallbackPoster;
+  const posterSrc = movie.Poster || getPosterUrl(movie.poster_path);
+  const backdropSrc = movie.Backdrop || movie.backdrop_w1280;
 
   const handleSaveRating = (e) => {
     e.preventDefault();
@@ -73,72 +85,139 @@ export default function MovieModal({ movie, onClose, onSearchPerson, initialShow
   };
 
   const handleShare = () => {
-    const textToCopy = `Check out "${movie.Title}" (${movie.Year}) on Movie Explorer! IMDb Rating: ${movie.imdbRating || 'N/A'}/10. https://www.imdb.com/title/${movie.imdbID}/`;
+    const tmdbLink = movie.id ? `https://www.themoviedb.org/${movie.media_type || 'movie'}/${movie.id}` : '';
+    const textToCopy = `Check out "${movie.Title}" (${movie.Year}) on Movie Explorer! Score: ${movie.imdbRating || movie.vote_average}/10. ${tmdbLink}`;
     navigator.clipboard.writeText(textToCopy);
     showToast('Movie link copied to clipboard! 📋', 'success');
   };
 
-  const parseList = (str) => {
-    if (!str || str === 'N/A') return [];
-    return str.split(',').map((s) => s.trim());
-  };
+  // YouTube Embed URL (Direct TMDB Trailer Key or Fallback Search)
+  const trailerEmbedUrl = selectedVideoKey
+    ? `https://www.youtube-nocookie.com/embed/${selectedVideoKey}?autoplay=1&rel=0`
+    : `https://www.youtube-nocookie.com/embed?listType=search&list=${encodeURIComponent(
+        `${movie.Title} ${movie.Year} official trailer`
+      )}&autoplay=1`;
 
-  const genres = parseList(movie.Genre);
-  const actors = parseList(movie.Actors);
-  const directors = parseList(movie.Director);
+  const genres = Array.isArray(movie.genres)
+    ? movie.genres.map((g) => (typeof g === 'object' ? g.name : g))
+    : movie.Genre ? movie.Genre.split(',').map((g) => g.trim()) : [];
 
-  // Safe trailer search embed URL
-  const trailerEmbedUrl = `https://www.youtube-nocookie.com/embed?listType=search&list=${encodeURIComponent(
-    `${movie.Title} ${movie.Year} official trailer`
-  )}&autoplay=1`;
+  const castMembers = Array.isArray(movie.cast) ? movie.cast.slice(0, 10) : [];
+  const similarItems = Array.isArray(movie.recommendations) && movie.recommendations.length > 0
+    ? movie.recommendations.slice(0, 6)
+    : (Array.isArray(movie.similar) ? movie.similar.slice(0, 6) : []);
 
   return (
     <div className="custom-modal-backdrop" onClick={onClose}>
       <div
         className="custom-modal-content"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxHeight: '90vh', overflowY: 'auto' }}
+        style={{ maxHeight: '92vh', overflowY: 'auto' }}
       >
-        {/* Modal Top Bar */}
-        <div className="d-flex align-items-center justify-content-between p-3 px-4 border-bottom border-secondary border-opacity-25 sticky-top bg-body">
-          <div className="d-flex align-items-center gap-2">
-            <span className="type-badge">{movie.Type || 'Feature'}</span>
-            <span className="badge bg-secondary bg-opacity-25 text-body">{movie.Rated || 'Not Rated'}</span>
+        {/* Backdrop Banner Header if available */}
+        {backdropSrc ? (
+          <div
+            className="modal-backdrop-hero"
+            style={{
+              backgroundImage: `linear-gradient(to bottom, rgba(9, 11, 16, 0.25) 0%, rgba(9, 11, 16, 0.65) 60%, var(--bg-modal) 100%), url(${backdropSrc})`,
+            }}
+          >
+            {/* Top Bar Floating */}
+            <div className="d-flex align-items-center justify-content-between p-3 px-4 position-absolute top-0 start-0 w-100 z-3">
+              <div className="d-flex align-items-center gap-2">
+                <span className="type-badge shadow-sm">
+                  {movie.Type === 'series' ? 'TV Series' : 'Movie'}
+                </span>
+                {movie.status && (
+                  <span className="badge bg-dark bg-opacity-75 border border-secondary text-secondary">
+                    {movie.status}
+                  </span>
+                )}
+              </div>
+              <div className="d-flex align-items-center gap-2">
+                <button
+                  className="modal-glass-btn shadow-sm"
+                  onClick={handleShare}
+                  title="Share / Copy Link"
+                >
+                  <FaShareAlt />
+                </button>
+                <button
+                  className="modal-glass-btn shadow-sm"
+                  onClick={onClose}
+                  title="Close (Esc)"
+                >
+                  <FaTimes />
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="d-flex align-items-center gap-2">
-            <button
-              className="btn btn-outline-secondary btn-sm rounded-circle p-2"
-              onClick={handleShare}
-              title="Share / Copy Link"
-            >
-              <FaShareAlt />
-            </button>
-            <button
-              className="btn btn-outline-secondary btn-sm rounded-circle p-2"
-              onClick={onClose}
-              title="Close (Esc)"
-            >
-              <FaTimes />
-            </button>
-          </div>
-        </div>
-
-        {/* Video Trailer view or Main Info */}
-        {showTrailer ? (
-          <div className="p-3 bg-black">
-            <div className="d-flex justify-content-between align-items-center mb-2 px-2 text-white">
-              <span className="fw-bold">🎬 Official Trailer: {movie.Title}</span>
+        ) : (
+          /* Clean Header when no backdrop */
+          <div className="d-flex align-items-center justify-content-between p-3 px-4 border-bottom border-secondary border-opacity-25">
+            <div className="d-flex align-items-center gap-2">
+              <span className="type-badge shadow-sm">
+                {movie.Type === 'series' ? 'TV Series' : 'Movie'}
+              </span>
+              {movie.status && (
+                <span className="badge bg-secondary bg-opacity-25 text-body">
+                  {movie.status}
+                </span>
+              )}
+            </div>
+            <div className="d-flex align-items-center gap-2">
               <button
-                className="btn btn-sm btn-outline-light rounded-pill"
-                onClick={() => setShowTrailer(false)}
+                className="btn btn-outline-secondary btn-sm rounded-circle p-2 shadow-sm"
+                onClick={handleShare}
+                title="Share / Copy Link"
               >
-                Back to Details
+                <FaShareAlt />
+              </button>
+              <button
+                className="btn btn-outline-secondary btn-sm rounded-circle p-2 shadow-sm"
+                onClick={onClose}
+                title="Close (Esc)"
+              >
+                <FaTimes />
               </button>
             </div>
-            <div className="ratio ratio-16x9 rounded-3 overflow-hidden">
+          </div>
+        )}
+
+        {/* Video Trailer View */}
+        {showTrailer ? (
+          <div className="p-3 bg-black">
+            <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 px-2 text-white">
+              <span className="fw-bold d-flex align-items-center gap-2">
+                <FaPlay className="text-danger" /> Official Video: {movie.Title}
+              </span>
+              <div className="d-flex align-items-center gap-2">
+                {movie.videos && movie.videos.length > 1 && (
+                  <select
+                    className="form-select form-select-sm bg-dark text-light border-secondary"
+                    style={{ maxWidth: '220px' }}
+                    value={selectedVideoKey}
+                    onChange={(e) => setSelectedVideoKey(e.target.value)}
+                  >
+                    {movie.videos.slice(0, 5).map((v) => (
+                      <option key={v.id} value={v.key}>
+                        {v.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                <button
+                  className="btn btn-sm btn-outline-light rounded-pill"
+                  onClick={() => setShowTrailer(false)}
+                >
+                  Back to Details
+                </button>
+              </div>
+            </div>
+            <div className="ratio ratio-16x9 rounded-3 overflow-hidden shadow-lg">
               <iframe
                 src={trailerEmbedUrl}
-                title={`${movie.Title} Trailer`}
+                title={`${movie.Title} Video`}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
@@ -146,23 +225,28 @@ export default function MovieModal({ movie, onClose, onSearchPerson, initialShow
           </div>
         ) : null}
 
-        <div className="p-4">
-          <div className="row g-4">
+        <div className="p-4 pt-3 position-relative">
+          <div className="row g-4 align-items-start position-relative">
             {/* Poster Column */}
             <div className="col-md-4 text-center">
-              <div className="rounded-4 overflow-hidden shadow-lg mb-3">
-                <img
-                  src={posterSrc}
-                  alt={movie.Title}
-                  className="img-fluid w-100"
-                  style={{ objectFit: 'cover' }}
-                />
+              <div className={backdropSrc ? 'modal-poster-wrapper mb-3' : 'mb-3'}>
+                <div
+                  className="rounded-4 overflow-hidden shadow-lg border border-secondary border-opacity-25"
+                  style={{ background: 'var(--bg-modal)' }}
+                >
+                  <img
+                    src={posterSrc}
+                    alt={movie.Title}
+                    className="img-fluid w-100"
+                    style={{ objectFit: 'cover', display: 'block' }}
+                  />
+                </div>
               </div>
 
               {/* Action Buttons */}
               <div className="d-flex flex-column gap-2">
                 <button
-                  className="btn btn-danger w-100 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2 py-2"
+                  className="btn btn-danger w-100 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2 py-2 shadow-sm"
                   onClick={() => setShowTrailer(true)}
                 >
                   <FaPlay /> Watch Trailer
@@ -186,7 +270,7 @@ export default function MovieModal({ movie, onClose, onSearchPerson, initialShow
                     onClick={() => toggleWatchlist(movie)}
                   >
                     {inWatch ? <FaBookmark /> : <FaRegBookmark />}
-                    {inWatch ? 'Watchlist' : 'Watchlist'}
+                    {inWatch ? 'Saved' : 'Watchlist'}
                   </button>
 
                   <button
@@ -203,25 +287,33 @@ export default function MovieModal({ movie, onClose, onSearchPerson, initialShow
             </div>
 
             {/* Info Column */}
-            <div className="col-md-8">
-              <h2 className="fw-bold mb-2 brand-font">{movie.Title}</h2>
+            <div className="col-md-8 pt-1">
+              <h2 className="fw-bold mb-1 brand-font text-body">{movie.Title}</h2>
+
+              {movie.tagline && (
+                <p className="fst-italic text-warning text-opacity-80 fw-medium mb-3">
+                  "{movie.tagline}"
+                </p>
+              )}
 
               {/* Quick stats strip */}
               <div className="d-flex flex-wrap align-items-center gap-3 mb-3 text-muted small">
                 <span className="d-flex align-items-center gap-1">
-                  <FaCalendarAlt /> {movie.Year}
+                  <FaCalendarAlt /> {movie.release_date || movie.Year}
                 </span>
-                <span className="d-flex align-items-center gap-1">
-                  <FaClock /> {movie.Runtime || 'N/A'}
-                </span>
-                {movie.imdbRating && movie.imdbRating !== 'N/A' && (
-                  <span className="badge bg-warning text-dark fw-bold px-2 py-1 rounded">
-                    ★ {movie.imdbRating} / 10 ({movie.imdbVotes || 'Votes'})
+                {movie.Runtime && movie.Runtime !== 'N/A' && (
+                  <span className="d-flex align-items-center gap-1">
+                    <FaClock /> {movie.Runtime}
                   </span>
                 )}
-                {movie.Metascore && movie.Metascore !== 'N/A' && (
-                  <span className="badge bg-success text-white fw-bold px-2 py-1 rounded">
-                    Metascore: {movie.Metascore}
+                {movie.number_of_seasons && (
+                  <span className="d-flex align-items-center gap-1">
+                    <FaTv /> {movie.number_of_seasons} Season{movie.number_of_seasons > 1 ? 's' : ''} ({movie.number_of_episodes} Episodes)
+                  </span>
+                )}
+                {movie.vote_average > 0 && (
+                  <span className="badge bg-success text-white fw-bold px-2 py-1 rounded shadow-sm">
+                    ★ {movie.vote_average.toFixed(1)} / 10 TMDB ({movie.vote_count?.toLocaleString()} votes)
                   </span>
                 )}
               </div>
@@ -240,53 +332,83 @@ export default function MovieModal({ movie, onClose, onSearchPerson, initialShow
 
               {/* Plot */}
               <div className="mb-4">
-                <h6 className="fw-bold text-uppercase small text-muted">Synopsis</h6>
-                <p className="lead fs-6 lh-base">{movie.Plot || 'No plot synopsis available.'}</p>
+                <h6 className="fw-bold text-uppercase small text-muted">Overview</h6>
+                <p className="lead fs-6 lh-base">{movie.Plot || movie.overview || 'No synopsis available.'}</p>
               </div>
 
-              {/* Cast & Crew with clickable names! */}
-              <div className="mb-4">
-                <div className="mb-2">
-                  <strong className="small text-muted text-uppercase d-block mb-1">Director:</strong>
-                  {directors.map((d) => (
-                    <span
-                      key={d}
-                      className="crew-chip"
-                      title={`Search for movies directed by ${d}`}
-                      onClick={() => {
-                        onSearchPerson(d);
-                        onClose();
-                      }}
-                    >
-                      {d} 🔍
-                    </span>
-                  ))}
-                </div>
-
-                <div className="mb-2">
-                  <strong className="small text-muted text-uppercase d-block mb-1">Starring Cast:</strong>
-                  {actors.map((a) => (
-                    <span
-                      key={a}
-                      className="crew-chip"
-                      title={`Search movies featuring ${a}`}
-                      onClick={() => {
-                        onSearchPerson(a);
-                        onClose();
-                      }}
-                    >
-                      {a} 🔍
-                    </span>
-                  ))}
-                </div>
-
-                {movie.Awards && movie.Awards !== 'N/A' && (
-                  <div className="mt-3 p-3 rounded-3 bg-secondary bg-opacity-10 border border-secondary border-opacity-25 d-flex align-items-center gap-2 small">
-                    <FaAward className="text-warning fs-5 flex-shrink-0" />
-                    <span>{movie.Awards}</span>
+              {/* Cast with Profile Avatars! */}
+              {castMembers.length > 0 && (
+                <div className="mb-4">
+                  <h6 className="fw-bold text-uppercase small text-muted d-flex align-items-center gap-2 mb-3">
+                    <FaUsers /> Top Cast
+                  </h6>
+                  <div className="d-flex flex-wrap gap-3">
+                    {castMembers.map((actor) => (
+                      <div
+                        key={actor.id || actor.name}
+                        className="d-flex align-items-center gap-2 p-2 rounded-3 glass-panel"
+                        style={{ cursor: 'pointer', transition: 'all 0.2s', minWidth: '150px' }}
+                        title={`Search for movies with ${actor.name}`}
+                        onClick={() => {
+                          if (onSearchPerson) {
+                            onSearchPerson(actor.name);
+                            onClose();
+                          }
+                        }}
+                      >
+                        <img
+                          src={getProfileUrl(actor.profile_path)}
+                          alt={actor.name}
+                          className="rounded-circle"
+                          style={{ width: '40px', height: '40px', objectFit: 'cover' }}
+                        />
+                        <div style={{ lineHeight: 1.2 }}>
+                          <span className="fw-bold d-block small">{actor.name}</span>
+                          <span className="text-muted" style={{ fontSize: '0.75rem' }}>
+                            {actor.character || 'Cast'}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+
+              {/* Director & Crew */}
+              {(movie.Director && movie.Director !== 'N/A') && (
+                <div className="mb-3 small">
+                  <strong className="text-muted text-uppercase me-2">Director:</strong>
+                  <span
+                    className="crew-chip"
+                    onClick={() => {
+                      if (onSearchPerson) {
+                        onSearchPerson(movie.Director);
+                        onClose();
+                      }
+                    }}
+                  >
+                    {movie.Director} 🔍
+                  </span>
+                </div>
+              )}
+
+              {/* Financial Stats */}
+              {(movie.budget > 0 || movie.revenue > 0) && (
+                <div className="row g-2 mb-4 p-3 rounded-3 bg-secondary bg-opacity-10 border border-secondary border-opacity-25 small">
+                  {movie.budget > 0 && (
+                    <div className="col-sm-6">
+                      <span className="text-muted d-block">Production Budget</span>
+                      <strong>{formatCurrency(movie.budget)}</strong>
+                    </div>
+                  )}
+                  {movie.revenue > 0 && (
+                    <div className="col-sm-6">
+                      <span className="text-muted d-block">Worldwide Box Office</span>
+                      <strong className="text-success">{formatCurrency(movie.revenue)}</strong>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Personal Rating & Review Box */}
               <div className="p-3 rounded-4 glass-panel mb-4">
@@ -334,24 +456,65 @@ export default function MovieModal({ movie, onClose, onSearchPerson, initialShow
                 </div>
               </div>
 
-              {/* External database links */}
+              {/* Similar / Recommended Titles */}
+              {similarItems.length > 0 && (
+                <div className="mb-4">
+                  <h6 className="fw-bold text-uppercase small text-muted mb-3 d-flex align-items-center gap-2">
+                    <FaThList /> More Like This
+                  </h6>
+                  <div className="row g-2">
+                    {similarItems.map((rec) => (
+                      <div
+                        key={rec.id}
+                        className="col-4 col-sm-3 col-md-2"
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                          if (onSelectMovie) onSelectMovie(rec);
+                        }}
+                      >
+                        <div className="rounded-3 overflow-hidden shadow-sm position-relative">
+                          <img
+                            src={getPosterUrl(rec.poster_path, 'w185')}
+                            alt={rec.Title}
+                            className="img-fluid w-100"
+                            style={{ height: '110px', objectFit: 'cover' }}
+                          />
+                        </div>
+                        <span
+                          className="d-block small text-truncate mt-1 text-center"
+                          title={rec.Title}
+                          style={{ fontSize: '0.78rem' }}
+                        >
+                          {rec.Title}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* External Database Links */}
               <div className="d-flex flex-wrap gap-2 pt-2 border-top border-secondary border-opacity-25">
-                <a
-                  href={`https://www.imdb.com/title/${movie.imdbID}/`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-outline-warning btn-sm rounded-pill d-flex align-items-center gap-1"
-                >
-                  <FaExternalLinkAlt /> View on IMDb
-                </a>
-                <a
-                  href={`https://www.rottentomatoes.com/search?search=${encodeURIComponent(movie.Title)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-outline-secondary btn-sm rounded-pill d-flex align-items-center gap-1"
-                >
-                  <FaExternalLinkAlt /> Rotten Tomatoes
-                </a>
+                {movie.id && (
+                  <a
+                    href={`https://www.themoviedb.org/${movie.media_type || 'movie'}/${movie.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-outline-info btn-sm rounded-pill d-flex align-items-center gap-1"
+                  >
+                    <FaExternalLinkAlt /> View on TMDB
+                  </a>
+                )}
+                {movie.imdb_id && (
+                  <a
+                    href={`https://www.imdb.com/title/${movie.imdb_id}/`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-outline-warning btn-sm rounded-pill d-flex align-items-center gap-1"
+                  >
+                    <FaExternalLinkAlt /> View on IMDb
+                  </a>
+                )}
                 <a
                   href={`https://www.justwatch.com/us/search?q=${encodeURIComponent(movie.Title)}`}
                   target="_blank"
@@ -368,3 +531,4 @@ export default function MovieModal({ movie, onClose, onSearchPerson, initialShow
     </div>
   );
 }
+

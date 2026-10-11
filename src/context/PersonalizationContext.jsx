@@ -100,79 +100,116 @@ export function PersonalizationProvider({ children }) {
     localStorage.setItem(STORAGE_KEYS.SEARCH_HISTORY, JSON.stringify(searchHistory));
   }, [searchHistory]);
 
-  const sanitizeMovie = (movie) => ({
-    imdbID: movie.imdbID,
-    Title: movie.Title,
-    Year: movie.Year,
-    Poster: movie.Poster,
-    Type: movie.Type || 'movie',
-    imdbRating: movie.imdbRating || 'N/A',
-    Genre: movie.Genre || '',
-    Director: movie.Director || '',
-  });
+  const sanitizeMovie = (movie) => {
+    const id = movie.id || movie.imdbID;
+    const title = movie.Title || movie.title || 'Untitled';
+    const year = movie.Year || (movie.release_date ? movie.release_date.slice(0, 4) : 'N/A');
+    const poster = movie.Poster || movie.poster_path;
+    return {
+      id,
+      imdbID: movie.imdbID || (movie.id ? `tmdb_${movie.id}` : id),
+      Title: title,
+      title,
+      Year: year,
+      Poster: poster,
+      poster_path: movie.poster_path,
+      Backdrop: movie.Backdrop || movie.backdrop_path,
+      Type: movie.Type || (movie.media_type === 'tv' ? 'series' : 'movie'),
+      imdbRating: movie.imdbRating || (movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'),
+      vote_average: movie.vote_average,
+      Genre: movie.Genre || (Array.isArray(movie.genres) ? movie.genres.map((g) => g.name || g).join(', ') : ''),
+      Director: movie.Director || '',
+    };
+  };
 
-  const isWatchlist = (imdbID) => watchlist.some((m) => m.imdbID === imdbID);
-  const isFavorite = (imdbID) => favorites.some((m) => m.imdbID === imdbID);
-  const isWatched = (imdbID) => watched.some((m) => m.imdbID === imdbID);
+  const matchesId = (m, targetId) => {
+    if (!m || !targetId) return false;
+    const tStr = String(targetId);
+    return (m.id && String(m.id) === tStr) || (m.imdbID && String(m.imdbID) === tStr);
+  };
+
+  const isWatchlist = (id) => watchlist.some((m) => matchesId(m, id));
+  const isFavorite = (id) => favorites.some((m) => matchesId(m, id));
+  const isWatched = (id) => watched.some((m) => matchesId(m, id));
 
   const toggleWatchlist = (movie) => {
-    if (!movie || !movie.imdbID) return;
-    const exists = isWatchlist(movie.imdbID);
+    if (!movie) return;
+    const movieId = movie.id || movie.imdbID;
+    if (!movieId) return;
+    const title = movie.Title || movie.title || 'Movie';
+    const exists = isWatchlist(movieId);
     if (exists) {
-      setWatchlist((prev) => prev.filter((m) => m.imdbID !== movie.imdbID));
-      showToast(`Removed "${movie.Title}" from Watchlist`, 'default');
+      setWatchlist((prev) => prev.filter((m) => !matchesId(m, movieId)));
+      showToast(`Removed "${title}" from Watchlist`, 'default');
     } else {
       setWatchlist((prev) => [sanitizeMovie(movie), ...prev]);
-      showToast(`Added "${movie.Title}" to Watchlist 🔖`, 'success');
+      showToast(`Added "${title}" to Watchlist 🔖`, 'success');
     }
   };
 
   const toggleFavorite = (movie) => {
-    if (!movie || !movie.imdbID) return;
-    const exists = isFavorite(movie.imdbID);
+    if (!movie) return;
+    const movieId = movie.id || movie.imdbID;
+    if (!movieId) return;
+    const title = movie.Title || movie.title || 'Movie';
+    const exists = isFavorite(movieId);
     if (exists) {
-      setFavorites((prev) => prev.filter((m) => m.imdbID !== movie.imdbID));
-      showToast(`Removed "${movie.Title}" from Favorites`, 'default');
+      setFavorites((prev) => prev.filter((m) => !matchesId(m, movieId)));
+      showToast(`Removed "${title}" from Favorites`, 'default');
     } else {
       setFavorites((prev) => [sanitizeMovie(movie), ...prev]);
-      showToast(`Added "${movie.Title}" to Favorites ❤️`, 'success');
+      showToast(`Added "${title}" to Favorites ❤️`, 'success');
     }
   };
 
   const toggleWatched = (movie) => {
-    if (!movie || !movie.imdbID) return;
-    const exists = isWatched(movie.imdbID);
+    if (!movie) return;
+    const movieId = movie.id || movie.imdbID;
+    if (!movieId) return;
+    const title = movie.Title || movie.title || 'Movie';
+    const exists = isWatched(movieId);
     if (exists) {
-      setWatched((prev) => prev.filter((m) => m.imdbID !== movie.imdbID));
-      showToast(`Marked "${movie.Title}" as unwatched`, 'default');
+      setWatched((prev) => prev.filter((m) => !matchesId(m, movieId)));
+      showToast(`Marked "${title}" as unwatched`, 'default');
     } else {
       setWatched((prev) => [sanitizeMovie(movie), ...prev]);
-      showToast(`Marked "${movie.Title}" as Watched! ✅`, 'success');
+      showToast(`Marked "${title}" as Watched! ✅`, 'success');
     }
   };
 
   const setMovieRating = (movie, ratingValue, reviewText = '') => {
-    if (!movie || !movie.imdbID) return;
+    if (!movie) return;
+    const movieId = movie.id || movie.imdbID;
+    if (!movieId) return;
+    const title = movie.Title || movie.title || 'Movie';
+    const poster = movie.Poster || movie.poster_path;
+    const year = movie.Year || (movie.release_date ? movie.release_date.slice(0, 4) : 'N/A');
+
     setRatings((prev) => ({
       ...prev,
-      [movie.imdbID]: {
+      [movieId]: {
         rating: ratingValue,
         review: reviewText,
-        title: movie.Title,
-        poster: movie.Poster,
-        year: movie.Year,
+        title,
+        poster,
+        year,
         updatedAt: new Date().toLocaleDateString(),
       },
     }));
-    showToast(`Saved your rating for "${movie.Title}" ⭐`, 'success');
+    showToast(`Saved your rating for "${title}" ⭐`, 'success');
   };
 
-  const getMovieRating = (imdbID) => ratings[imdbID] || null;
+  const getMovieRating = (id) => {
+    if (!id) return null;
+    return ratings[id] || ratings[String(id)] || null;
+  };
 
   const addRecentlyViewed = (movie) => {
-    if (!movie || !movie.imdbID) return;
+    if (!movie) return;
+    const movieId = movie.id || movie.imdbID;
+    if (!movieId) return;
     setRecentlyViewed((prev) => {
-      const filtered = prev.filter((m) => m.imdbID !== movie.imdbID);
+      const filtered = prev.filter((m) => !matchesId(m, movieId));
       return [sanitizeMovie(movie), ...filtered].slice(0, 12);
     });
   };
